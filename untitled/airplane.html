@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+        <style link rel="stylesheet" type="text/css" href="reset.css">
+            body {
+                background-color:darkslategray;
+            }
+            #playground {
+                width: 1000px;
+                height: 500px;
+                background-color: black;
+                margin-right: auto;
+                margin-left: auto;
+                margin-top: 120px;
+                position: relative;
+            }
+            img{
+                background-image: url("korab.png");
+                width: 35px;
+                height: 35px;
+                position: absolute;
+                bottom: 0;
+                
+            }
+            #target {
+                width: 80px;
+                height: 10px;
+                background-color: #555555;
+                position: absolute;
+            }
+            .bullet {
+                width: 4px;
+                height: 3px;
+                background-color: whitesmoke;
+                position: absolute;
+            }
+            #bulLeft {
+
+                background-color: black;
+                color: white;
+                position: absolute;
+                top: 105px;
+                left: 20px;
+            }
+            #score {
+                background-color: black;
+                color: white;
+                position: absolute;
+                top: 105px;
+                left: 100px;;
+            }
+            #hits {
+                background-color: black;
+                color: white;
+                position: absolute;
+
+            }
+        </style>
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded" ,function () {
+
+
+            var shipPosition = {
+                top: 400,
+                left: 500
+            }
+            var targetPosition = {
+                top: 0,
+                left: 0
+
+            }
+
+            var isMovingRight = false;
+            var isMovingLeft = false;
+            var speed = 5;
+
+            var tarMovingright = false;
+            var tarMovingLeft = false;
+
+            function shipMove() {
+
+                if (isMovingRight == true) {
+                    shipPosition.left += speed
+                }
+
+                if (isMovingLeft == true) {
+                    shipPosition.left -= speed
+                }
+                if (shipPosition.left == 0) {
+                    shipPosition.left += speed;
+                }
+                if (shipPosition.left == 960) {
+                    shipPosition.left -= speed;
+                }
+
+
+                var box = document.getElementById('korabche');
+                box.style.left = shipPosition.left + 'px';
+
+                requestAnimationFrame(shipMove);
+            }
+
+            function targetMove() {
+                if (targetPosition.left == 930) {
+                    tarMovingright = false;
+                }
+
+                if (targetPosition.left == 0) {
+                    tarMovingright = true;
+                }
+
+                if (tarMovingright == true) {
+                    targetPosition.left += speed;
+                } else {
+                    targetPosition.left -= speed;
+                }
+
+                var mishena = document.getElementById("target");
+                mishena.style.left = targetPosition.left + 'px';
+                requestAnimationFrame(targetMove);
+
+
+            }
+            function gameLoop () {
+                targetMove();
+                shipMove();
+                createBullet();
+                shooting();
+                score();
+
+            }
+
+
+
+            function createBullet() {
+
+                    var box = document.getElementById('korabche');
+                    var eternal = document.getElementById('bul');
+                    var newDiv = document.createElement("div");
+                    newDiv.classList.add('bullet');
+                    eternal.appendChild(newDiv);
+                newDiv.style.left = box.style.left;
+                newDiv.style.bottom = "36px";
+                score();
+            }
+            function shooting () {
+                var mooving = document.getElementsByClassName('bullet');
+                for (var i = 0; i < mooving.length; i++) {
+                    mooving[i].style.bottom = (parseInt(mooving[i].style.bottom)+10) + "px";
+                    if(parseInt(mooving[i].style.bottom) == 490){
+                        var tPosition = parseInt(document.getElementById("target").style.left);
+                        var bPosition = parseInt(mooving[i].style.left);
+                        if (bPosition>=tPosition && bPosition<=(tPosition+80)) {
+                            var hitz = parseInt(document.getElementById("hits").innerHTML);
+                            hitz ++;
+                            document.getElementById("hits").innerHTML = hitz.toString();
+                        }
+                        mooving[i].parentNode.removeChild(mooving[i]);
+                    }
+                }
+
+                requestAnimationFrame(shooting);
+            }
+            function score () {
+
+                var count = parseInt(document.getElementById('score').innerHTML);
+                count--;
+                document.getElementById('score').innerHTML = count.toString();
+            }
+            requestAnimationFrame(gameLoop);
+
+            document.addEventListener('keydown', function (e) {
+                if (e.keyCode == 39) {
+                    isMovingRight = true;
+                }
+
+                if (e.keyCode == 37) {
+                    isMovingLeft = true;
+                }
+                if (e.keyCode == 17) {
+                    createBullet();
+
+                }
+            }, false);
+
+            document.addEventListener('keyup', function (e) {
+                if (e.keyCode == 39) {
+                    isMovingRight = false;
+                }
+
+                if (e.keyCode == 37) {
+                    isMovingLeft = false;
+                }
+
+
+            }, false);
+
+        },false);
+    </script>
+
+</head>
+<body>
+<div id="playground">
+    <div id="target"></div>
+    <div id="spaceship"><img id="korabche" src="korab.png"></div>
+    <div id="bul">
+
+
+
+
+    </div>
+
+
+
+
+
+</div>
+<div id="bulletLeft"><p id="bulLeft">Bullets left:  </p>
+    <p id="score">100</p>
+</div>
+<div><p id="hits">0</p></div>
+
+
+
+</body>
+</html>
